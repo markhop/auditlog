@@ -1,15 +1,21 @@
 package play.modules.auditlog;
 
-import org.hibernate.event.*;
-import play.db.jpa.JPASupport;
+import org.hibernate.event.PostDeleteEvent;
+import org.hibernate.event.PostDeleteEventListener;
+import org.hibernate.event.PostInsertEvent;
+import org.hibernate.event.PostInsertEventListener;
+import org.hibernate.event.PostUpdateEvent;
+import org.hibernate.event.PostUpdateEventListener;
+
+import play.db.jpa.Model;
 
 public class AuditLogListener implements PostInsertEventListener, PostUpdateEventListener, PostDeleteEventListener {
 
     public void onPostInsert(PostInsertEvent event) {
-        JPASupport entity = (JPASupport) event.getEntity();
+    	Model entity = (Model) event.getEntity();
         if (entity.getClass().isAnnotationPresent(Auditable.class)) {
             String model = entity.getClass().getName().replaceFirst("models.", "");
-            String modelId = entity.getEntityId().toString();
+            String modelId = entity.getId().toString();
             String[] properties = event.getPersister().getPropertyNames();
             Object[] values = event.getState();
             for (int i=0; i<properties.length; i++) {
@@ -25,10 +31,10 @@ public class AuditLogListener implements PostInsertEventListener, PostUpdateEven
     }
 
     public void onPostUpdate(PostUpdateEvent event) {
-        JPASupport entity = (JPASupport) event.getEntity();
+    	Model entity = (Model) event.getEntity();
         if (entity.getClass().isAnnotationPresent(Auditable.class)) {
             String model = entity.getClass().getName().replaceFirst("models.", "");
-            String modelId = entity.getEntityId().toString();
+            String modelId = entity.getId().toString();
             String[] properties = event.getPersister().getPropertyNames();
             Object[] oldValues = event.getOldState();
             Object[] values = event.getState();
@@ -56,10 +62,10 @@ public class AuditLogListener implements PostInsertEventListener, PostUpdateEven
     }
 
     public void onPostDelete(PostDeleteEvent event) {
-        JPASupport entity = (JPASupport) event.getEntity();
+    	Model entity = (Model) event.getEntity();
         if (entity.getClass().isAnnotationPresent(Auditable.class)) {
             String model = entity.getClass().getName().replaceFirst("models.", "");
-            String modelId = entity.getEntityId().toString();
+            String modelId = entity.getId().toString();
             String[] properties = event.getPersister().getPropertyNames();
             Object[] values = event.getDeletedState();
             for (int i=0; i<properties.length; i++) {
