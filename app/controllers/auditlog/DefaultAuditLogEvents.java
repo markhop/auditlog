@@ -8,7 +8,7 @@ import play.mvc.Controller;
 public class DefaultAuditLogEvents extends Controller {
 
     static String getActor() {
-        return session.get("username");
+        return session==null ? null : session.get("username");
     }
 
     static void onCreate(String model, String modelId, String property, String value) {
