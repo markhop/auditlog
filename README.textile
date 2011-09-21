@@ -1,0 +1,50 @@
+h1. Audit Log module
+
+A fork of "http://github.com/alexanderstrebkov/auditlog":http://github.com/alexanderstrebkov/auditlog brought up to date with version 1.2.3 of the "Play! Framework":http://www.playframework.org.
+
+h2. Add Audit Log module to your application's dependency list
+
+In the **conf/dependencies.yml** file, add a local repository and a dependency
+
+bc. # Application dependencies
+require:
+    - play
+    - auditlog -> auditlog
+repositories:
+    - localRepo:
+        type: local
+        artifact: ${application.path}/../[module]
+        contains:
+          - auditlog
+
+Adjust the **artifact** setting accordingly.
+
+h2. Enable the Audit Log module for the application
+
+In the **/conf/application.conf** file, enable the Hibernate event listeners for the Audit Log module by adding those lines:
+
+bc. # Audit Log
+hibernate.ejb.event.post-insert=play.modules.auditlog.AuditLogListener
+hibernate.ejb.event.post-update=play.modules.auditlog.AuditLogListener
+hibernate.ejb.event.post-delete=play.modules.auditlog.AuditLogListener
+
+h2. Using the Audit Log module
+
+h3. Add @Auditable annotation to your model:
+
+bc. @Entity
+@Auditable
+public class Book extends Model {
+
+You are done. All create, update and delete operations will be logged into AuditLogEvent model provided by module. Following information is stored:
+
+* Model name
+* Model id
+* Operation (CREATE, UPDATE or DELETE)
+* Property name
+* Old value
+* New value
+* Actor
+* Date and time
+
+By default actor is **username** property from **session** (compatible with Secure module for Play! Framework).
