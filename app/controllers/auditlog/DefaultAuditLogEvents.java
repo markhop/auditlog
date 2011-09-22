@@ -11,8 +11,13 @@ public class DefaultAuditLogEvents extends Controller {
         return session==null ? null : session.get("username");
     }
 
+    static String getSessionId() {
+        return session==null ? null : session.getId();
+    }
+
     static void onCreate(String model, String modelId, String property, String value) {
         String actor = (String) AuditLog.invoke("getActor");
+        String sessionId = (String) AuditLog.invoke("getSessionId");
         new SaveAuditLogEvent(
                 model,
                 modelId,
@@ -20,12 +25,14 @@ public class DefaultAuditLogEvents extends Controller {
                 property,
                 null,
                 value,
-                actor
+                actor,
+                sessionId
         ).now();
     }
 
     static void onUpdate(String model, String modelId, String property, String oldValue, String value) {
         String actor = (String) AuditLog.invoke("getActor");
+        String sessionId = (String) AuditLog.invoke("getSessionId");
         new SaveAuditLogEvent(
                 model,
                 modelId,
@@ -33,12 +40,14 @@ public class DefaultAuditLogEvents extends Controller {
                 property,
                 oldValue,
                 value,
-                actor
+                actor,
+                sessionId
         ).now();
     }
 
     static void onDelete(String model, String modelId, String property, String value) {
         String actor = (String) AuditLog.invoke("getActor");
+        String sessionId = (String) AuditLog.invoke("getSessionId");
         new SaveAuditLogEvent(
                 model,
                 modelId,
@@ -46,7 +55,8 @@ public class DefaultAuditLogEvents extends Controller {
                 property,
                 value,
                 null,
-                actor
+                actor,
+                sessionId
         ).now();
     }
 

@@ -35,4 +35,6 @@ public class AuditLogEvent extends Model {
 
     public Date createdAt;
 
+    public String sessionId;
+    
 }

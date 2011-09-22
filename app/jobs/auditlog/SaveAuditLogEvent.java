@@ -14,8 +14,9 @@ public class SaveAuditLogEvent extends Job {
     private String oldValue;
     private String newValue;
     private String actor;
-
-    public SaveAuditLogEvent(String model, String modelId, AuditLogEvent.Operation operation, String property, String oldValue, String newValue, String actor) {
+    private String sessionId;
+    
+    public SaveAuditLogEvent(String model, String modelId, AuditLogEvent.Operation operation, String property, String oldValue, String newValue, String actor, String sessionId) {
         this.model = model;
         this.modelId = modelId;
         this.operation = operation;
@@ -23,6 +24,7 @@ public class SaveAuditLogEvent extends Job {
         this.oldValue = oldValue;
         this.newValue = newValue;
         this.actor = actor;
+        this.sessionId = sessionId;
     }
 
     public void doJob() {
@@ -35,6 +37,7 @@ public class SaveAuditLogEvent extends Job {
         event.newValue = newValue;
         event.actor = actor;
         event.createdAt = new Date();
+        event.sessionId = sessionId;
         event.save();
     }
 
