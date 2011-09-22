@@ -19,12 +19,21 @@ public class AuditLogListener implements PostInsertEventListener, PostUpdateEven
             String[] properties = event.getPersister().getPropertyNames();
             Object[] values = event.getState();
             for (int i=0; i<properties.length; i++) {
+            	String value = values[i] == null ? "NULL" : values[i].toString();
+            	// if we have a password field then ensure we don't log the actual value
+            	try {
+					if(entity.getClass().getField(properties[i]).isAnnotationPresent(PasswordField.class)) {
+						value = "******";
+					}
+				} catch (SecurityException e) {
+				} catch (NoSuchFieldException e) {
+				}
                 AuditLog.invoke(
                         "onCreate",
                         model,
                         modelId,
                         properties[i],
-                        values[i] == null ? "NULL" : values[i].toString()
+                        value
                 );
             }
         }
@@ -48,13 +57,24 @@ public class AuditLogListener implements PostInsertEventListener, PostUpdateEven
                     updated = true;
                 }
                 if (updated) {
+                	String oldValue = oldValues[i] == null ? "NULL" : oldValues[i].toString();
+                	String newValue = values[i] == null ? "NULL" : values[i].toString();
+                	// if we have a password field then ensure we don't log the actual value
+                	try {
+    					if(entity.getClass().getField(properties[i]).isAnnotationPresent(PasswordField.class)) {
+    						oldValue = "******";
+    						newValue = "******";
+    					}
+    				} catch (SecurityException e) {
+    				} catch (NoSuchFieldException e) {
+    				}
                     AuditLog.invoke(
                             "onUpdate",
                             model,
                             modelId,
                             properties[i],
-                            oldValues[i] == null ? "NULL" : oldValues[i].toString(),
-                            values[i] == null ? "NULL" : values[i].toString()
+                            oldValue,
+                            newValue
                     );
                 }
             }
@@ -69,12 +89,21 @@ public class AuditLogListener implements PostInsertEventListener, PostUpdateEven
             String[] properties = event.getPersister().getPropertyNames();
             Object[] values = event.getDeletedState();
             for (int i=0; i<properties.length; i++) {
+            	String value = values[i] == null ? "NULL" : values[i].toString();
+            	// if we have a password field then ensure we don't log the actual value
+            	try {
+					if(entity.getClass().getField(properties[i]).isAnnotationPresent(PasswordField.class)) {
+						value = "******";
+					}
+				} catch (SecurityException e) {
+				} catch (NoSuchFieldException e) {
+				}
                 AuditLog.invoke(
                         "onDelete",
                         model,
                         modelId,
                         properties[i],
-                        values[i] == null ? "NULL" : values[i].toString()
+                        value
                 );
             }
         }
