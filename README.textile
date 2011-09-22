@@ -46,5 +46,18 @@ You are done. All create, update and delete operations will be logged into Audit
 * New value
 * Actor
 * Date and time
+* Session id
 
-By default actor is **username** property from **session** (compatible with Secure module for Play! Framework).
+By default actor is **username** property from **session** and session id is taken from **session.getId()** (compatible with Secure module for Play! Framework).
+
+h3. Protecting passwords:
+
+To ensure passwords and other sensitive data is not included in the audit log the **@PasswordField** annotation is provided.  Simply annotate the sensitive fields like so:
+
+bc. @Entity
+@Auditable
+public class User extends Model {
+    @PasswordField
+    public String password;
+
+The audit log will contain an entry for the field to show it was changed but will not log the value.  It logs '******' instead.
